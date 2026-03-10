@@ -1,0 +1,20 @@
+[project]
+name = "crazy-problem-extractor"
+version = "26.03"
+description = "Extract and convert Tymoczko Biochemistry textbook problems into WeBWorK PG/PGML questions for ADAPT"
+requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
+authors = [
+	{name = "Neil Voss"},
+]
+dependencies = [
+	"pyyaml",
+	"rich",
+]
+
+[project.urls]
+Homepage = "https://bsky.app/profile/neilvosslab.bsky.social"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.backends._legacy:_Backend"

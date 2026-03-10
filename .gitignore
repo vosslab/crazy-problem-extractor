@@ -1,2 +1,12 @@
+artifacts/
 report_*.txt
 .DS_Store
+__pycache__/
+*.pyc
+structured/
+reports/
+output_smoke/
+output/
+concepts/
+_staging/
+_prompts/

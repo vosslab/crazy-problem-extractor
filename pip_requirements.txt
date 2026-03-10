@@ -1,0 +1,2 @@
+pyyaml  # YAML parsing for concept files and index output
+rich  # formatted terminal output for validation reports
