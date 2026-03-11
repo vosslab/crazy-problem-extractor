@@ -2,10 +2,10 @@
 
 ## Pipeline overview
 
-The pipeline converts the Tymoczko "Biochemistry: A Short Course" (3rd ed.) textbook into WeBWorK PG/PGML questions for ADAPT.
+The pipeline converts textbook content into WeBWorK PG/PGML questions for ADAPT. Currently supports Tymoczko "Biochemistry: A Short Course" (3rd ed.) and OpenStax Biology 2e.
 
 ```
-Layer 1: Ingestion       parse_textbook.py --> structured/chapters/*.json
+Layer 1: Ingestion       parse_textbook.py / parse_biology2e.py --> structured/chapters/*.json
 Layer 2: Concepts         Claude agents     --> concepts/ch{NN}_concepts.yaml
 Layer 3: Questions        Claude agents     --> output/**/*.pgml
 Layer 4: Validation       validate_pgml.py + validate_pgml_render.py
@@ -21,7 +21,8 @@ Four independent library modules handle different parsing tasks:
 - [textbook_problems.py](../textbook_problems.py) -- problem extraction (standard, challenge, data interpretation)
 - [textbook_answers.py](../textbook_answers.py) -- answer key parsing from back-of-book section
 
-[parse_textbook.py](../parse_textbook.py) orchestrates all four modules to produce per-chapter JSON.
+[parse_textbook.py](../parse_textbook.py) orchestrates all four modules to produce per-chapter JSON for Tymoczko.
+[parse_biology2e.py](../parse_biology2e.py) handles OpenStax Biology 2e.
 
 ## PGML helpers
 
@@ -40,13 +41,17 @@ Three independent modules support PGML question generation and validation:
 
 - [build_index.py](../build_index.py) -- reads concepts and questions, produces coverage reports
 
+## Scripts
+
+- [scripts/multi_agent_folder_setup.py](../scripts/multi_agent_folder_setup.py) -- builds problem manifests and staging directories for multi-agent PGML generation
+
 ## Data flow
 
 ```
-artifacts/Tymoczko_3rd_edition.txt
+artifacts/Tymoczko_3rd_edition.txt (or Biology2e.txt)
     |
     v
-parse_textbook.py (Layer 1)
+parse_textbook.py / parse_biology2e.py (Layer 1)
     |
     v
 structured/chapters/ch{NN}_{slug}.json
