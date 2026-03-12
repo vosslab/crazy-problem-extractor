@@ -99,6 +99,17 @@ Coders must reword stems, replace distractors, add meaningful `$rng->random()` r
 
 No automated referee has proven effective yet. `validate_pgml.py` catches structural errors but cannot judge pedagogical quality. Manual review or a future AI referee step is needed to select the best version when multiple coders produce competing files for the same problem.
 
+## Tester role: quality review, not lint
+
+Coders self-lint via `lint_pg_via_renderer_api.py` at write time (test 5 achieved 100% pass rate). Dedicated tester agents should not duplicate this mechanical check. Instead, testers should verify copyright transformation quality:
+
+1. **Same concept**: the PGML addresses the same topic as the assigned problem number
+2. **Different correct answer**: a properly transformed question has a different correct answer from the textbook (same concept, different angle, different answer)
+3. **Different stem**: the question wording is sufficiently different from the original
+4. **Scientific accuracy**: the new correct answer is actually correct (use Sonnet for this, not Haiku)
+
+This makes testers a quality gate that catches conceptual errors and insufficient transformation, not a syntax checker.
+
 ## File organization
 
 ```
@@ -115,6 +126,21 @@ output/ch03_amino_acids/          # curated final files
   ...
 ```
 
+## Test directory convention
+
+Each swarm test run stores all output in a dedicated `testN/` directory at the repo root. This keeps test artifacts isolated from each other and from production `output/`.
+
+```
+testN/
+  staging/       # raw coder output, organized by chapter
+  validated/     # files that pass lint
+  rejected/      # files that fail lint
+  reports/       # per-chapter lint reports and quality reviews
+  prompts/       # coder briefing, assignments, textbook text
+```
+
+Previous test data lives in its own directories (e.g., `test4_historical/`, `test5/`).
+
 ## Open questions
 
 - Should the referee keep multiple "best" versions for the same problem as separate question variants?
@@ -130,3 +156,5 @@ output/ch03_amino_acids/          # curated final files
 - [docs/SWARM_TEST2_REPORT.md](SWARM_TEST2_REPORT.md) -- ch03 modular assignment (8 coders, 100% coverage)
 - [docs/SWARM_TEST3_REPORT.md](SWARM_TEST3_REPORT.md) -- Biology 2e full-scale (47 chapters, 1,151+ files)
 - [docs/SWARM_TEST4_REPORT.md](SWARM_TEST4_REPORT.md) -- Biology 2e re-dispatch and quality findings
+- [docs/SWARM_TEST5_REPORT.md](SWARM_TEST5_REPORT.md) -- Bio2e pipelined generation with quality improvements (10 chapters, 331 files, 100% lint pass, 0% verbatim)
+- [docs/SWARM_TEST6_REPORT.md](SWARM_TEST6_REPORT.md) -- Bio2e quality gates with widget quotas and Sonnet reviewers (10 chapters, 315 files, 99% RNG audit, 92% quality pass)

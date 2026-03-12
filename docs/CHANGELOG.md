@@ -1,5 +1,128 @@
 # Changelog
 
+## 2026-03-10
+
+### Additions and New Features
+
+- Completed quality review of ch03 (32 files) and ch06 (21 files) from test7 swarm run
+  - ch03: 32 files reviewed; 11 files with scientific_accuracy=false, 9 files with answer_varies=false; major errors include: @byproducts array assigning ammonia/CO2/methane as dehydration synthesis byproducts (c1_p01), glycosidic bond mapped to hydrolysis (c1_p06), identical @roles and @correct_answers arrays making any option "correct" (c1_p11, c1_p21, c1_p26), glycogen incorrectly assigned "structural support" role (c3_p08), and pick_index 2 in c3_p23 mapping polar-to-nonpolar surface swap to secondary structure change
+  - ch06: 21 files reviewed; 7 files with scientific_accuracy=false, 1 file with answer_varies=false; major errors include: photosynthesis listed as requiring ATP as input (c2_p17), injury recovery classified as primarily catabolic (c1_p16), Km used as proxy for activation energy (c3_p08), ice melting classified as not an energy transformation (c4_p09), GTP/ADP/NADH incorrectly listed as immediate energy currencies for lipids/proteins/nucleic acids (c4_p04), and enzyme properties incorrectly labeled as false statements (c3_p13)
+  - Created `test7/reports/ch03_quality.json` (32 entries) and `test7/reports/ch06_quality.json` (21 entries)
+
+- Completed quality review of ch09 (32 files) and ch11 (28 files) from test7 swarm run
+  - ch09: 32 files reviewed; 15 files with answer_varies=false (hardcoded indices or single-answer arrays), 3 scientific accuracy failures including fabricated PIP2 percentages (ch09_c5_p10), IkB dephosphorylation logic reversal (ch09_c4_p14), incorrect ECM growth factor storage claim (ch09_c2_p32), and PKC immune suppression error (ch09_c3_p18)
+  - ch11: 28 files reviewed; 7 files with answer_varies=false, 8 scientific accuracy failures including horse gamete calculation error (ch11_c1_p11), fungal/animal life cycle array errors (ch11_c1_p16), telophase I ploidy contradiction (ch11_c2_p12), and incorrect meiosis-in-gametophyte claim (ch11_c3_p28)
+  - Created `test7/reports/ch09_quality.json` (32 entries) and `test7/reports/ch11_quality.json` (28 entries)
+
+- Completed quality review of ch13 (12 files) and ch15 (25 files) from test7 swarm run
+  - ch13: 3/12 pass all 7 criteria; failures in scientific_accuracy (7 files), answer_varies (3 files); ch13_c3_p08 critically broken (all four location codes marked correct for every pick_index); ch13_c4_p04 assigns wrong sex-linked distributions to hemophilia and fragile X
+  - ch15: 5/25 pass all 7 criteria; failures in scientific_accuracy (13 files), answer_varies (9 files), option_coverage (5 files); ch15_c4_p24 mRNA sequences do not correctly derive from template strands; ch15_c5_p10 uses randomized historical year as correct answer with no biological basis
+  - Created `test7/reports/ch13_quality.json` (12 entries) and `test7/reports/ch15_quality.json` (25 entries)
+- Completed quality review of ch20 (20 files) and ch21 (30 files) from test7 swarm run
+  - ch20: 20 files reviewed; 4 files with answer_varies=false (hardcoded correct indices), 1 file with answer_shuffled forced to index 0 always, 1 scientific accuracy failure (crocodile four-chambered heart), 1 stem leaks answer via template variable in question text
+  - ch21: 30 files reviewed; 3 files with critical CheckboxList bugs (barrier label strings don't match option strings, making answers unmarkable), 1 scientific error (measles receptor wrongly identified as CD4 instead of CD46/SLAM), 1 same_concept=false (replication timeline vs replication truth statement), 1 bacteriophage lytic cycle time wrong by orders of magnitude (20 hours vs ~20 minutes)
+  - Created `test7/reports/ch20_quality.json` (20 entries) and `test7/reports/ch21_quality.json` (30 entries)
+
+- Completed quality review of ch16 (35 files) and ch17 (28 files) from test7 swarm run
+  - ch16: 35 files reviewed; 9 files with answer_varies=false (mostly hardcoded $answer = $answers[0] or fixed index patterns in coder 4 files), 10 files with scientific_accuracy=false; major errors: ch16_c4_p09 hardcodes 'activator' but LacI pick describes repressor behavior, ch16_c3_p18 pick_index=2 marks 'alternative splicing requires different genes' as correct (factually false), ch16_c5_p15 lists 'translation initiation' as posttranscriptional control, ch16_c2_p22 targets patients with high ER in normal cells instead of tumor cells
+  - ch17: 28 files reviewed; 2 files with answer_varies=false (ch17_c2_p02 correct_indices always [0,1,2]), 9 files with scientific_accuracy=false; major errors: ch17_c2_p22 pick_index=2 marks Southern blotting as detecting gene expression (should be Northern blotting), ch17_c4_p09 question stem describes cDNA library clones but labels them 'SNP markers', ch17_c1_p21 pick_index=1 defines protein signature as amino acid sequence (wrong), ch17_c4_p24 pick_index=1 describes Bt bacterium as a gene delivery method rather than source of the gene
+  - Created `test7/reports/ch16_quality.json` (35 entries) and `test7/reports/ch17_quality.json` (28 entries)
+
+- Completed test7 pipeline: Wave 2 repair pass and final reporting
+  - Repair coders produced 64/67 files; 57 passed re-audit, moved to validated
+  - Final yield: 254 validated files out of 267 target problems (95.1%)
+  - Answer variation improved from 53% (test 6) to 91.7% (test 7 validated)
+  - RNG structural and lint both hit 100%
+  - Scientific accuracy dropped to 69.8% (reviewer); answer shuffled at 79.4%
+  - Created [docs/SWARM_TEST7_REPORT.md](SWARM_TEST7_REPORT.md) with full metrics comparison
+  - Created `test7/reports/timing.md` with phase timestamps
+  - New scripts: `test7/check_answer_variation.py`, `test7/check_option_coverage.py`, `test7/_sort_files.py`
+
+### Decisions and Failures
+
+- ch21_c5_p15 and ch21_c5_p25: parallel arrays use short label strings as correct answers but CheckboxList options use full sentences; WeBWorK string matching will fail to mark any answer correct -- these files must be regenerated
+- ch21_c5_p10: bacteriophage lytic cycle time listed as 20 hours is scientifically wrong (actual ~20-30 minutes for T4); numeric answer files require domain expert verification
+- ch20_c4_p19: template variable $answer appears verbatim in the question stem, telegraphing the correct answer before students select
+
+- Completed swarm test 6: Bio2e PGML generation with quality gates
+  - 315/315 files generated across 10 chapters (100% coverage)
+  - Widget distribution: RadioButtons 41.3%, CheckboxList 30.5%, PopUp 19.7%, Numeric 8.6% (all targets met)
+  - RNG audit: 99.0% structural pass (vs 65.6% in test 5)
+  - Quality review: 290/315 validated (92.1%), 25 rejected
+  - 8 critical bugs found (unanswerable questions, scientifically false correct answers)
+  - ~100 files with cosmetic-only RNG (answer never changes across seeds)
+- Created `test6/generate_assignments.py` with global widget assignment cycle
+- Created `test6/check_rng_usage.py` for structural RNG auditing
+- Created `test6/prompts/coder_briefing.md` with mandatory RNG and widget quota enforcement
+- Created [docs/SWARM_TEST6_REPORT.md](SWARM_TEST6_REPORT.md): full metrics comparison and recommendations
+- Added test 6 entry to test reports list in [docs/SWARM_STRATEGIES.md](SWARM_STRATEGIES.md)
+- Completed swarm test 5: pipelined Bio2e generation with quality improvements
+  - 50 Haiku coder agents across 10 chapters, 331 PGML files generated
+  - 100% lint pass rate via renderer API (`lint_pg_via_renderer_api.py`)
+  - 0% verbatim copying rate (vs high rate in tests 3-4)
+  - 4 widget types used (RadioButtons, CheckboxList, PopUp, Numeric)
+  - 65.6% meaningful RNG usage (below 80% target)
+- Created `test5/` directory structure with staging, validated, rejected, reports, and prompts subdirectories
+- Created `test5/prompts/coder_briefing.md` with transformation requirements, widget diversity expectations, deny list, and full example
+- Created `test5/prompts/assignments.json` with round-robin problem assignments for 5 coders x 10 chapters
+- Created `test5/prompts/Biology2e-WEB.txt` from pdftotext conversion of Biology 2e PDF
+- Created [docs/SWARM_TEST5_REPORT.md](SWARM_TEST5_REPORT.md): test 5 results, comparison with previous tests, recommendations for test 6
+- Added test directory convention section to [docs/SWARM_STRATEGIES.md](SWARM_STRATEGIES.md)
+- Added test 5 entry to test reports list in [docs/SWARM_STRATEGIES.md](SWARM_STRATEGIES.md)
+
+### Developer Tests and Notes
+
+- Quality review of 53 PGML files across ch02 (19 files) and ch05 (34 files) written to [test6/reports/ch02_ch05_quality.md](../test6/reports/ch02_ch05_quality.md)
+  - 51 of 53 files pass all 5 criteria (96%)
+  - ch02_c4_p19: concept mismatch -- saturated/unsaturated triglyceride content belongs in ch03 (biological macromolecules), not ch02 section 2.3 (carbon chemistry)
+  - ch05_c3_p13: accuracy failure at 2 of 4 random paths -- fabricated Na-K pump mechanisms paired with wrong correct answers; pick_index 1 and 2 present incorrect biology
+- Quality review of 65 PGML files across ch40 (23 files) and ch45 (42 files) written to [test6/reports/ch40_ch45_quality.md](../test6/reports/ch40_ch45_quality.md)
+  - 4 critical bugs: ch45_c4_p29 unanswerable (answer string not in options), ch45_c2_p17 popup ignores pick_index, ch45_c4_p39 scientifically false claim as correct answer, ch40_c3_p13 cardiac muscle called voluntary
+  - 16 files with cosmetic-only RNG (context changes, correct answer fixed); 2 ch40 files reproduce exact textbook answer
+- Quality review of 67 PGML files across ch18 (25 files) and ch22 (42 files) written to [test6/reports/ch18_ch22_quality.md](../test6/reports/ch18_ch22_quality.md)
+  - 58 of 67 files pass all 5 criteria (87%); 9 files have at least one FAIL
+  - ch18_c1_p01: both RNG branches overwrite correct answer with identical string; answer never varies
+  - ch18_c4_p14: all four `@classifications` entries are "prezygotic"; correct answer invariant across seeds
+  - ch22_c1_p06: `$rng->random(0, 0, 1)` locks pick_index to 0; RNG is called but produces zero variation
+  - ch22_c1_p16: scenario pool affects only solution text; question stem and correct answer "Calcium" are constant across seeds
+  - ch22_c3_p03: `$reason_idx` picked independently from scenario; indices 1, 3, and 4 in `@reasons` are scientifically incorrect; students can be graded correct for a false statement depending on seed
+  - ch22_c3_p23: marked correct answer limits antibiotic producers to prokaryotes, contradicting the textbook definition and the fungal examples (penicillin, cephalosporin) cited in the stem
+  - ch22_c5_p20: at index 2, `answer => 2` points to "photoautotroph" in the numbered list but `$class_bold` displays "photolithotroph" in the solution; direct label mismatch
+
+### Decisions and Failures
+
+- RNG usage at 65.6% is below the 80% target; many Haiku coders seed `$rng` but never call `->random()`. Need structural enforcement or a lint rule.
+- ch37 produced 33/35 files (2 short). Round-robin assignment works but some coders produce fewer files than assigned.
+- ch10_c4_p29.pgml has a functional bug: numeric widget graded against value 15 instead of essay format.
+- Testers ran as batch after all coders completed instead of pipelined per the plan (context window limitation).
+
+## 2026-03-10 (continued)
+
+### Developer Tests and Notes
+
+- Completed quality review of 53 PGML files from test6 ch02 and ch05 staging directories
+  - 100% pass on Concept, Diff-ans, and Diff-stem criteria
+  - Sci-acc: 48 PASS, 3 FAIL, 2 WARN (91%)
+  - Funct-RNG: 49 PASS, 4 FAIL (92%)
+  - 7 files flagged for rejection or repair
+- Key defects found: hemolysis/hypertonic mismatch in ch05_c1_p01; Na-K pump mechanism errors in ch05_c3_p13; unused RNG calls in ch02_c3_p08 and ch02_c3_p18; always-True answer in ch02_c1_p11; false statement is actually true in ch02_c3_p03
+- Report written to [test6/reports/ch02_ch05_quality.md](../test6/reports/ch02_ch05_quality.md)
+- Completed quality review of 63 PGML files from test6 ch28 and ch31 staging directories
+  - Concept: 63/63 PASS (100%)
+  - Answer differs: 53/63 PASS (84%); 10 files share same correct answer as textbook
+  - Stem differs: 63/63 PASS (100%)
+  - Scientific accuracy: 62/63 PASS (98%); ch28_c1_p21 misstates echinoderm circulatory fluid
+  - Functional RNG: 43/63 PASS (68%); 18 files hardcode answer label while varying only scenario text
+  - 1 critical bug: ch31_c4_p24 popup widget mismatch makes 3 of 4 seeds unanswerable
+  - Report written to test6/reports/ch28_ch31_quality.md
+- Completed quality review of 67 PGML files from test6 ch08 (photosynthesis) and ch12 (Mendel's heredity)
+  - 100% pass on Concept, Diff-ans, Diff-stem criteria across all 67 files
+  - Sci-acc: 53 PASS, 9 WARN, 5 FAIL (79% clean pass)
+  - Funct-RNG: 32 PASS, 31 WARN, 4 FAIL (48% full variation; 46% cosmetic-only)
+  - 7 files flagged for correction before production use
+  - Key defects: antenna molecule oxygen production error (ch08_c2_p07); answer text in choice label (ch08_c3_p08); wrong photon count (ch08_c5_p10); incorrect Mendelian trait (ch12_c1_p06); contradictory carrier-male statements (ch12_c3_p28); wrong chocolate lab probability (ch12_c5_p20)
+  - Report written to [test6/reports/ch08_ch12_quality.md](../test6/reports/ch08_ch12_quality.md)
+
 ## 2026-03-12
 
 ### Additions and New Features
