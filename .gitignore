@@ -10,3 +10,4 @@ output/
 concepts/
 _staging/
 _prompts/
+test[0-9]
